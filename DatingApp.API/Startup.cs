@@ -12,6 +12,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using DatingApp.API.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace DatingApp.API
 {
@@ -30,9 +33,25 @@ namespace DatingApp.API
         {
             //Provide all in order to connect to the database.
             //For that we need to install the Microsoft.EntityFrameworkCore.Sqlite from NuGet
+            //Here the order doesnt matter
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
             services.AddCors(); //To tackle the problem which happened by trusting both local hosts
+            //services.AddSingleton //Single instance of the repository thu all our application. Causes issues with concurrent requests
+            //services.AddTransient //The Services are created each time they are requested. For light services
+            services.AddScoped<IAuthRepository, AuthRepository>(); //The service is created once by request whitin the scope. One instance per Http request. But uses the same instance within the request.
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+                options => 
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                }
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +69,8 @@ namespace DatingApp.API
             app.UseRouting();
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()); //To tackle the problem which happened by trusting both local hosts
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
