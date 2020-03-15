@@ -9,7 +9,6 @@ import { error } from 'protractor';
 })
 export class NavComponent implements OnInit {
   model: any = {}; // Empty object where we can store the username and password
-  
   constructor(private authService: AuthService) { } // Inyect auth service into our contructor
 
   ngOnInit() {
@@ -22,18 +21,18 @@ export class NavComponent implements OnInit {
       console.log('Logged in successfully');
       },
       loginError => {
-        console.log('Failed to login');
+        console.log(loginError); // 'Failed to login'
       }
     );
     // console.log(this.model);
   }
 
-  loggedIn(){
+  loggedIn() {
     const token = localStorage.getItem('token');
     return !!token; // Returns true or false depending if it is empty
   }
 
-  logOut(){
+  logOut() {
     localStorage.removeItem('token');
     console.log('logged out');
   }
