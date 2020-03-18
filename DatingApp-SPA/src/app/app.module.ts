@@ -1,7 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http'; // To query from the Database
-import { FormsModule } from '@angular/Forms'; // To use the bidirectional component
+import { FormsModule } from '@angular/forms'; // To use the bidirectional component
+import { BsDropdownModule } from 'ngx-bootstrap'; // For the angular dropdown functionallity
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -20,7 +22,9 @@ import { ErrorInterceptorProvider } from './_services/error.interceptor';
    imports: [
       BrowserModule,
       HttpClientModule,
-      FormsModule // ImportAngularformsforthehtmlcomponent
+      FormsModule, // ImportAngularformsforthehtmlcomponent
+      BsDropdownModule.forRoot(),
+      BrowserAnimationsModule
    ],
    providers: [
       ErrorInterceptorProvider // Inyect the error handling

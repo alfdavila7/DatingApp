@@ -1,0 +1,3 @@
+.dropdown-toggle, .dropdown-item {
+    cursor: pointer; /* Change the cursor to a pointer type */ 
+}

@@ -15,6 +15,7 @@ namespace DatingApp.API.Data
             _context = context;
 
         }
+
         public async Task<User> Login(string username, string password)
         {
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username);
@@ -31,8 +32,6 @@ namespace DatingApp.API.Data
             return user;
         }
 
-
-        
         private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using(var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
@@ -72,7 +71,7 @@ namespace DatingApp.API.Data
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
-
+        
         public async Task<bool> UserExist(string username)
         {
             if(await _context.Users.AnyAsync(x => x.UserName == username))
