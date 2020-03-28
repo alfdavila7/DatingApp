@@ -19,6 +19,7 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using DatingApp.API.Helpers;
+using AutoMapper;
 
 namespace DatingApp.API
 {
@@ -39,11 +40,17 @@ namespace DatingApp.API
             //For that we need to install the Microsoft.EntityFrameworkCore.Sqlite from NuGet
             //Here the order doesnt matter
             services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(opt => // User NewtonsoftJson as a Json Serializer and Deserializer
+                {
+                    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                }
+            ); 
             services.AddCors(); //To tackle the problem which happened by trusting both local hosts
+            services.AddAutoMapper(typeof(DatingRepository).Assembly); //Map between our UserForDetailed Dto and our DatingRepository
             //services.AddSingleton //Single instance of the repository thu all our application. Causes issues with concurrent requests
             //services.AddTransient //The Services are created each time they are requested. For light services
             services.AddScoped<IAuthRepository, AuthRepository>(); //The service is created once by request whitin the scope. One instance per Http request. But uses the same instance within the request.
+            services.AddScoped<IDatingRepository, DatingRepository>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options => 
                 {
